@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { HttpExceptionFilter } from './../src/filters/http-exception.filter';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -12,13 +13,24 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api');
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+      }),
+    );
+    app.enableCors({
+      origin: true,
+      credentials: true,
+    });
+    app.useGlobalFilters(new HttpExceptionFilter());
+
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  describe('health-check (GET)', () => {
+    it('success', () => {
+      return request(app.getHttpServer()).get('/api/health-check').expect(200);
+    });
   });
 });

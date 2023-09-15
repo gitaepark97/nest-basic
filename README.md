@@ -26,9 +26,13 @@
 
 ### Setup infrastructure
 
-- Start postgres container:
+- Start mariadb container:
   ```bash
-  npm run mariadb
+  npm run start:db
+  ```
+- Remove mariadb container:
+  ```bash
+  npm run remove:db
   ```
 - Run db migration up 1 version:
   ```bash
@@ -67,4 +71,14 @@
 - Run server:
   ```bash
   npm run start
+  ```
+
+- Run unit test:
+  ```bash
+  npm run test
+  ```
+
+- Run e2e test:
+  ```bash
+  npm run test:e2e
   ```

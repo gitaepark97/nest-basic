@@ -20,10 +20,10 @@ export class Users {
   @Column('varchar', { name: 'email', unique: true, length: 50 })
   email: string;
 
-  @Column('varchar', { name: 'hashed_password', length: 255 })
+  @Column('varchar', { name: 'hashed_password', length: 255, select: false })
   hashedPassword: string;
 
-  @Column('varchar', { name: 'salt', length: 255 })
+  @Column('varchar', { name: 'salt', length: 255, select: false })
   salt: string;
 
   @Column('varchar', { name: 'nickname', unique: true, length: 50 })
