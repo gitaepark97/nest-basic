@@ -18,7 +18,6 @@ export class Init1694680583368 implements MigrationInterface {
         \`user_agent\` varchar(255) NOT NULL,
         \`client_ip\` varchar(255) NOT NULL,
         \`is_blocked\` boolean NOT NULL DEFAULT (false),
-        \`expired_at\` timestamp NOT NULL,
         \`created_at\` timestamp NOT NULL DEFAULT (now())
       );`);
     await queryRunner.query(`CREATE TABLE \`categories\` (

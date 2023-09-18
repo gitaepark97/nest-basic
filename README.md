@@ -63,7 +63,7 @@
 
 - Create a new db migration:
   ```bash
-  npm run migrate:create /db/migrations/<migration_name>
+  npm run migration:create db/migrations/<migration_name>
   ```
 
 ### How to run

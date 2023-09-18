@@ -41,5 +41,10 @@ export default async () => {
       password: secrets.DB_PASSWORD,
       database: secrets.DB_DATABASE,
     },
+    jwt: {
+      secret: secrets.JWT_SECRET,
+      accessExpiresIn: secrets.ACCESS_EXPIRES_IN,
+      refreshExpiresIn: secrets.REFRESH_EXPIRES_IN,
+    },
   };
 };

@@ -35,7 +35,7 @@ export class RegisterRequestDto {
   nickname: string;
 }
 
-export class RegisterResponseDto {
+export class UserResponseDto {
   @ApiProperty({
     example: 'test@email.com',
     description: '이메일',

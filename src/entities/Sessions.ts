@@ -22,9 +22,6 @@ export class Sessions {
   @Column('tinyint', { name: 'is_blocked', width: 1, default: () => "'0'" })
   isBlocked: boolean;
 
-  @Column('timestamp', { name: 'expired_at' })
-  expiredAt: Date;
-
   @Column('timestamp', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',

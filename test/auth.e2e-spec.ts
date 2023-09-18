@@ -9,6 +9,9 @@ import {
   createRandomString,
 } from './utils/random';
 
+const userAgent = 'test agent';
+const clientIp = ':::1';
+
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
 
@@ -203,6 +206,143 @@ describe('AuthController (e2e)', () => {
       expect(body.message).toBe(
         `Duplicate entry '${nickname}' for key 'nickname'`,
       );
+    });
+  });
+
+  describe('login (POST)', () => {
+    const email = createRandomEmail();
+    const password = createRandomString(10);
+    const nickname = createRandomString(15);
+
+    it('register', async () => {
+      await request(app.getHttpServer()).post('/api/auth/register').send({
+        email,
+        password,
+        nickname,
+      });
+    });
+
+    it('success', async () => {
+      const req = {
+        email,
+        password,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(201);
+      expect(typeof body.session_id).toBe('string');
+      expect(typeof body.access_token).toBe('string');
+      expect(typeof body.refresh_token).toBe('string');
+      expect(body.user.email).toBe(req.email);
+      expect(body.user.nickname).toBe(nickname);
+      expect(typeof body.user.userId).toBe('number');
+      expect(body.user.createdAt).toBeDefined();
+      expect(body.user.updatedAt).toBeDefined();
+    });
+
+    it('required email', async () => {
+      const req = {
+        password,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'email should not be empty',
+        'email must be an email',
+      ]);
+    });
+
+    it('invalid email type', async () => {
+      const req = {
+        email: createRandomString(5),
+        password,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual(['email must be an email']);
+    });
+
+    it('required password', async () => {
+      const req = {
+        email,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'password should not be empty',
+        'password must be a string',
+      ]);
+    });
+
+    it('invalid password type', async () => {
+      const req = {
+        email,
+        password: createRandomInt(1, 10),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual(['password must be a string']);
+    });
+
+    it('not found user', async () => {
+      const req = {
+        email: createRandomEmail(),
+        password,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(404);
+      expect(body.message).toEqual('not found user');
+    });
+
+    it('wrong password', async () => {
+      const req = {
+        email,
+        password: createRandomString(10),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual('wrong password');
     });
   });
 });

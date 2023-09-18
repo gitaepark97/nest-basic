@@ -1,12 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterRequestDto, RegisterResponseDto } from './dto/register.dto';
+import { RegisterRequestDto, UserResponseDto } from './dto/register.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
+import { Request } from 'express';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -15,7 +17,7 @@ export class AuthController {
 
   @ApiOperation({ summary: '회원가입' })
   @ApiCreatedResponse({
-    type: RegisterResponseDto,
+    type: UserResponseDto,
   })
   @ApiBadRequestResponse({
     content: {
@@ -60,5 +62,53 @@ export class AuthController {
   @Post('register')
   register(@Body() body: RegisterRequestDto) {
     return this.authService.register(body.email, body.password, body.nickname);
+  }
+
+  @ApiOperation({ summary: '로그인' })
+  @ApiCreatedResponse({
+    type: LoginResponseDto,
+  })
+  @ApiBadRequestResponse({
+    content: {
+      'application/json': {
+        examples: {
+          notFoundUser: {
+            value: {
+              message: 'not found user',
+            },
+          },
+          wrongPassword: {
+            value: {
+              message: 'wrong password',
+            },
+          },
+          invalidEmail: {
+            value: {
+              message: ['email should not be empty', 'email must be an email'],
+            },
+          },
+          invalidPassword: {
+            value: {
+              message: [
+                'password should not be empty',
+                'password must be a string',
+              ],
+            },
+          },
+        },
+      },
+    },
+  })
+  @Post('login')
+  login(@Req() req: Request, @Body() body: LoginRequestDto) {
+    const userAgent = req.headers['user-agent'];
+    const clientIp = req.ip;
+
+    return this.authService.login(
+      body.email,
+      body.password,
+      userAgent,
+      clientIp,
+    );
   }
 }
