@@ -285,7 +285,7 @@ describe('AuthService', () => {
   describe('renew access token', () => {
     it('success', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const expectedSession = {
@@ -311,7 +311,7 @@ describe('AuthService', () => {
         .spyOn(mockJwtService, 'signAsync')
         .mockResolvedValue(token);
 
-      const result = await service.renewAccessToken(req.refresh_token);
+      const result = await service.renewAccessToken(req.refreshToken);
 
       expect(result.accessToken).toBe(token);
 
@@ -322,7 +322,7 @@ describe('AuthService', () => {
 
     it('internal server error', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const expectedSession = {
@@ -347,7 +347,7 @@ describe('AuthService', () => {
         .mockRejectedValue(expectedError);
 
       await expect(async () => {
-        await service.renewAccessToken(req.refresh_token);
+        await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new InternalServerErrorException());
 
       saveJwtSpy.mockRestore();
@@ -356,7 +356,7 @@ describe('AuthService', () => {
 
     it('invalid refresh token', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const saveJwtSpy = jest
@@ -364,7 +364,7 @@ describe('AuthService', () => {
         .mockRejectedValue(new Error());
 
       await expect(async () => {
-        await service.renewAccessToken(req.refresh_token);
+        await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new BadRequestException('invalid refresh token'));
 
       saveJwtSpy.mockRestore();
@@ -372,7 +372,7 @@ describe('AuthService', () => {
 
     it('unauthorized refresh token', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const expectedSession = {
@@ -395,7 +395,7 @@ describe('AuthService', () => {
         .mockResolvedValue(expectedSession);
 
       await expect(async () => {
-        await service.renewAccessToken(req.refresh_token);
+        await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
       saveJwtSpy.mockRestore();
@@ -404,7 +404,7 @@ describe('AuthService', () => {
 
     it('unauthorized user', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const expectedSession = {
@@ -427,7 +427,7 @@ describe('AuthService', () => {
         .mockResolvedValue(expectedSession);
 
       await expect(async () => {
-        await service.renewAccessToken(req.refresh_token);
+        await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
       saveJwtSpy.mockRestore();
@@ -436,7 +436,7 @@ describe('AuthService', () => {
 
     it('is blocked', async () => {
       const req = {
-        refresh_token: token,
+        refreshToken: token,
       };
 
       const expectedSession = {
@@ -460,7 +460,7 @@ describe('AuthService', () => {
         .mockResolvedValue(expectedSession);
 
       await expect(async () => {
-        await service.renewAccessToken(req.refresh_token);
+        await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
       saveJwtSpy.mockRestore();

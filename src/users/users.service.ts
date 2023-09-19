@@ -15,11 +15,11 @@ export class UsersService {
     private readonly usersRepository: Repository<Users>,
   ) {}
 
-  async updateUser(user_id: number, nickname: string) {
+  async updateUser(userId: number, nickname: string) {
     try {
-      await this.usersRepository.update(user_id, { nickname });
+      await this.usersRepository.update(userId, { nickname });
       const user = await this.usersRepository.findOne({
-        where: { userId: user_id },
+        where: { userId },
       });
       if (!user) {
         throw new NotFoundException('not found user');

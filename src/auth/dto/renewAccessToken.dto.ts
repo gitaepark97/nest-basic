@@ -9,7 +9,7 @@ export class RenewAccessTokenRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  refresh_token: string;
+  refreshToken: string;
 }
 
 export class RenewAccessTokenResponseDto {

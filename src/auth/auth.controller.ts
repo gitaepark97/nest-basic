@@ -174,8 +174,8 @@ export class AuthController {
           invalidRefreshTokenParameter: {
             value: {
               message: [
-                'refresh token should not be empty',
-                'refresh token must be a string',
+                'refreshToken should not be empty',
+                'refreshToken must be a string',
               ],
             },
           },
@@ -234,6 +234,6 @@ export class AuthController {
   })
   @Post('renew-access-token')
   renewAccessToken(@Body() body: RenewAccessTokenRequestDto) {
-    return this.authService.renewAccessToken(body.refresh_token);
+    return this.authService.renewAccessToken(body.refreshToken);
   }
 }

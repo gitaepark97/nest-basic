@@ -85,12 +85,12 @@ export class AuthService {
         throw new BadRequestException('wrong password');
       }
 
-      const accessPayload = { user_id: user.userId };
+      const accessPayload = { userId: user.userId };
       const accessToken = await this.jwtService.signAsync(accessPayload, {
         expiresIn: this.configService.get('jwt.accessExpiresIn'),
       });
 
-      const refreshPayload = { id: uuidv4(), user_id: user.userId };
+      const refreshPayload = { id: uuidv4(), userId: user.userId };
       const refreshToken = await this.jwtService.signAsync(refreshPayload, {
         expiresIn: this.configService.get('jwt.refreshExpiresIn'),
       });
@@ -124,11 +124,11 @@ export class AuthService {
     }
   }
 
-  async renewAccessToken(refresh_token: string) {
+  async renewAccessToken(refreshToken: string) {
     try {
       let refreshTokenPayload;
       try {
-        refreshTokenPayload = await this.jwtService.verifyAsync(refresh_token);
+        refreshTokenPayload = await this.jwtService.verifyAsync(refreshToken);
       } catch (err) {
         throw new BadRequestException('invalid refresh token');
       }
@@ -140,10 +140,10 @@ export class AuthService {
         throw new NotFoundException('not found session');
       }
 
-      if (refresh_token !== session.refreshToken) {
+      if (refreshToken !== session.refreshToken) {
         throw new UnauthorizedException();
       }
-      if (session.userId !== refreshTokenPayload.user_id) {
+      if (session.userId !== refreshTokenPayload.userId) {
         throw new UnauthorizedException();
       }
       if (session.isBlocked) {

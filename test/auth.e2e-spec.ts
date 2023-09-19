@@ -374,7 +374,7 @@ describe('AuthController (e2e)', () => {
 
     it('success', async () => {
       const req = {
-        refresh_token: refreshToken,
+        refreshToken,
       };
 
       const { statusCode, body } = await request(app.getHttpServer())
@@ -394,14 +394,14 @@ describe('AuthController (e2e)', () => {
 
       expect(statusCode).toBe(400);
       expect(body.message).toEqual([
-        'refresh_token should not be empty',
-        'refresh_token must be a string',
+        'refreshToken should not be empty',
+        'refreshToken must be a string',
       ]);
     });
 
     it('invalid refresh token type', async () => {
       const req = {
-        refresh_token: 1,
+        refreshToken: 1,
       };
 
       const { statusCode, body } = await request(app.getHttpServer())
@@ -409,12 +409,12 @@ describe('AuthController (e2e)', () => {
         .send(req);
 
       expect(statusCode).toBe(400);
-      expect(body.message).toEqual(['refresh_token must be a string']);
+      expect(body.message).toEqual(['refreshToken must be a string']);
     });
 
     it('invalid refresh token', async () => {
       const req = {
-        refresh_token: 'invalid refresh token',
+        refreshToken: 'invalid refresh token',
       };
 
       const { statusCode, body } = await request(app.getHttpServer())
