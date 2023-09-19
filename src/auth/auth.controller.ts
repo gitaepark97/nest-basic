@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterRequestDto, UserResponseDto } from './dto/register.dto';
+import { RegisterRequestDto } from './dto/register.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -11,11 +11,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
-import { Request } from 'express';
 import {
   RenewAccessTokenRequestDto,
   RenewAccessTokenResponseDto,
 } from './dto/renewAccessToken.dto';
+import { UserResponseDto } from '../common/dto/user.dto';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -146,7 +146,7 @@ export class AuthController {
     },
   })
   @Post('login')
-  login(@Req() req: Request, @Body() body: LoginRequestDto) {
+  login(@Req() req, @Body() body: LoginRequestDto) {
     const userAgent = req.headers['user-agent'];
     const clientIp = req.ip;
 

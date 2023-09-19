@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Sessions } from './Sessions';
 import { Posts } from './Posts';
@@ -29,15 +31,18 @@ export class Users {
   @Column('varchar', { name: 'nickname', unique: true, length: 50 })
   nickname: string;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
+    type: 'timestamp',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 

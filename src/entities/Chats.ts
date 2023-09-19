@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -25,7 +26,8 @@ export class Chats {
   @Column('text', { name: 'content' })
   content: string;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })

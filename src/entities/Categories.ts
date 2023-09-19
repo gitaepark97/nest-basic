@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Posts } from './Posts';
 
@@ -19,15 +21,18 @@ export class Categories {
   @Column('int', { name: 'parent_category_id', nullable: true })
   parentCategoryId: number | null;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
+    type: 'timestamp',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 

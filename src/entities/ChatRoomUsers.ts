@@ -1,4 +1,11 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Users } from './Users';
 import { ChatRooms } from './ChatRooms';
 
@@ -11,7 +18,8 @@ export class ChatRoomUsers {
   @Column('int', { primary: true, name: 'user_id' })
   userId: number;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })

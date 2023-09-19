@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
-import { HttpExceptionFilter } from './../src/filters/http-exception.filter';
+import { AppModule } from '../src/app.module';
+import { HttpExceptionFilter } from '../src/filters/http-exception.filter';
 import {
   createRandomEmail,
   createRandomInt,
@@ -214,7 +214,7 @@ describe('AuthController (e2e)', () => {
     const password = createRandomString(10);
     const nickname = createRandomString(15);
 
-    beforeAll(async () => {
+    it('before', async () => {
       await request(app.getHttpServer()).post('/api/auth/register').send({
         email,
         password,
@@ -349,7 +349,7 @@ describe('AuthController (e2e)', () => {
   describe('renew refresh token (POST)', () => {
     let refresh_token;
 
-    beforeAll(async () => {
+    it('befor', async () => {
       const email = createRandomEmail();
       const password = createRandomString(10);
       const nickname = createRandomString(15);

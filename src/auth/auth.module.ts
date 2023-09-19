@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Sessions } from '../entities/Sessions';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([Users, Sessions]),
@@ -14,7 +15,6 @@ import { Sessions } from '../entities/Sessions';
       useFactory: async (configService: ConfigService) => {
         const secrets = configService.get('jwt');
         return {
-          global: true,
           secret: secrets.secret,
         };
       },
@@ -23,5 +23,6 @@ import { Sessions } from '../entities/Sessions';
   ],
   providers: [AuthService],
   controllers: [AuthController],
+  exports: [JwtModule],
 })
 export class AuthModule {}

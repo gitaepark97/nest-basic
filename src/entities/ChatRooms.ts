@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Chats } from './Chats';
 import { ChatRoomUsers } from './ChatRoomUsers';
 
@@ -10,15 +17,18 @@ export class ChatRooms {
   @Column('varchar', { name: 'title', length: 50 })
   title: string;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
+    type: 'timestamp',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 

@@ -81,9 +81,11 @@ describe('AuthService', () => {
         nickname: user.nickname,
       };
 
-      const saveSpy = jest
+      const expectedUser = user;
+
+      const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'save')
-        .mockResolvedValue(user);
+        .mockResolvedValue(expectedUser);
 
       const result = await service.register(
         req.email,
@@ -91,13 +93,13 @@ describe('AuthService', () => {
         req.nickname,
       );
 
-      expect(result.email).toEqual(user.email);
-      expect(result.nickname).toEqual(user.nickname);
-      expect(result.userId).toEqual(user.userId);
-      expect(result.createdAt).toEqual(user.createdAt);
-      expect(result.updatedAt).toEqual(user.updatedAt);
+      expect(result.email).toEqual(expectedUser.email);
+      expect(result.nickname).toEqual(expectedUser.nickname);
+      expect(result.userId).toEqual(expectedUser.userId);
+      expect(result.createdAt).toEqual(expectedUser.createdAt);
+      expect(result.updatedAt).toEqual(expectedUser.updatedAt);
 
-      saveSpy.mockRestore();
+      saveUsersSpy.mockRestore();
     });
 
     it('internal server error', async () => {
@@ -107,12 +109,9 @@ describe('AuthService', () => {
         nickname: user.nickname,
       };
 
-      const expectedError = {
-        code: 'ER_ACCESS_DENIED_ERROR',
-        sqlMessage: 'Access denied. Check username and password.',
-      };
+      const expectedError = new Error();
 
-      const saveSpy = jest
+      const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'save')
         .mockRejectedValue(expectedError);
 
@@ -120,7 +119,7 @@ describe('AuthService', () => {
         await service.register(req.email, req.password, req.nickname);
       }).rejects.toThrowError(new InternalServerErrorException());
 
-      saveSpy.mockRestore();
+      saveUsersSpy.mockRestore();
     });
 
     it('duplicate email', async () => {
@@ -135,7 +134,7 @@ describe('AuthService', () => {
         sqlMessage: "Duplicate entry 'test@email.com' for key 'email'",
       };
 
-      const saveSpy = jest
+      const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'save')
         .mockRejectedValue(expectedError);
 
@@ -145,7 +144,7 @@ describe('AuthService', () => {
         new BadRequestException(expectedError.sqlMessage),
       );
 
-      saveSpy.mockRestore();
+      saveUsersSpy.mockRestore();
     });
 
     it('duplicate nickname', async () => {
@@ -160,7 +159,7 @@ describe('AuthService', () => {
         sqlMessage: "Duplicate entry 'test' for key 'nickname'",
       };
 
-      const saveSpy = jest
+      const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'save')
         .mockRejectedValue(expectedError);
 
@@ -170,7 +169,7 @@ describe('AuthService', () => {
         new BadRequestException(expectedError.sqlMessage),
       );
 
-      saveSpy.mockRestore();
+      saveUsersSpy.mockRestore();
     });
   });
 
@@ -180,6 +179,8 @@ describe('AuthService', () => {
         email: user.email,
         password: user.password,
       };
+
+      const expectedUser = user;
 
       const expectedSession = {
         sessionId: uuidv4(),
@@ -191,7 +192,7 @@ describe('AuthService', () => {
 
       const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
-        .mockResolvedValue(user);
+        .mockResolvedValue(expectedUser);
 
       const saveSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'save')
@@ -211,11 +212,11 @@ describe('AuthService', () => {
       expect(result.session_id).toBe(expectedSession.sessionId);
       expect(result.access_token).toBe(token);
       expect(result.refresh_token).toBe(token);
-      expect(result.user.email).toEqual(user.email);
-      expect(result.user.nickname).toEqual(user.nickname);
-      expect(result.user.userId).toEqual(user.userId);
-      expect(result.user.createdAt).toEqual(user.createdAt);
-      expect(result.user.updatedAt).toEqual(user.updatedAt);
+      expect(result.user.email).toEqual(expectedUser.email);
+      expect(result.user.nickname).toEqual(expectedUser.nickname);
+      expect(result.user.userId).toEqual(expectedUser.userId);
+      expect(result.user.createdAt).toEqual(expectedUser.createdAt);
+      expect(result.user.updatedAt).toEqual(expectedUser.updatedAt);
 
       saveUsersSpy.mockRestore();
       saveSessionsSpy.mockRestore();
@@ -228,10 +229,7 @@ describe('AuthService', () => {
         password: user.password,
       };
 
-      const expectedError = {
-        code: 'ER_ACCESS_DENIED_ERROR',
-        sqlMessage: 'Access denied. Check username and password.',
-      };
+      const expectedError = new Error();
 
       const saveUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
@@ -335,10 +333,7 @@ describe('AuthService', () => {
         clientIp,
       };
 
-      const expectedError = {
-        code: 'ER_ACCESS_DENIED_ERROR',
-        sqlMessage: 'Access denied. Check username and password.',
-      };
+      const expectedError = new Error();
 
       const saveJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')

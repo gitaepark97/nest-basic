@@ -1,4 +1,11 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Users } from './Users';
 
 @Index('user_id', ['userId'], {})
@@ -22,7 +29,8 @@ export class Sessions {
   @Column('tinyint', { name: 'is_blocked', width: 1, default: () => "'0'" })
   isBlocked: boolean;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })

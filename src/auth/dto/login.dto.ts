@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UserResponseDto } from './register.dto';
+import { UserResponseDto } from '../../common/dto/user.dto';
 
 export class LoginRequestDto {
   @ApiProperty({

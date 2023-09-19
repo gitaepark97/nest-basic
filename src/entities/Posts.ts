@@ -1,10 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Users } from './Users';
 import { Categories } from './Categories';
@@ -36,19 +39,22 @@ export class Posts {
   @Column('tinyint', { name: 'is_delete', width: 1, default: () => "'0'" })
   isDelete: boolean;
 
-  @Column('timestamp', {
+  @CreateDateColumn({
+    type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @Column('timestamp', {
+  @UpdateDateColumn({
+    type: 'timestamp',
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
 
-  @Column('timestamp', { name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at' })
   deletedAt: Date;
 
   @ManyToOne(() => Users, (users) => users.posts, {
