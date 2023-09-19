@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entities/Users';
@@ -84,7 +85,7 @@ export class AuthService {
         throw new BadRequestException('wrong password');
       }
 
-      const accessPayload = { user_id: user.userId, nickname: user.nickname };
+      const accessPayload = { user_id: user.userId };
       const accessToken = await this.jwtService.signAsync(accessPayload, {
         expiresIn: this.configService.get('jwt.accessExpiresIn'),
       });
@@ -118,7 +119,51 @@ export class AuthService {
       ) {
         throw err;
       }
-      console.log(err);
+
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async renewAccessToken(refresh_token: string) {
+    try {
+      let refreshTokenPayload;
+      try {
+        refreshTokenPayload = await this.jwtService.verifyAsync(refresh_token);
+      } catch (err) {
+        throw new BadRequestException('invalid refresh token');
+      }
+
+      const session = await this.sessionssRepository.findOne({
+        where: { sessionId: refreshTokenPayload.id },
+      });
+      if (!session) {
+        throw new NotFoundException('not found session');
+      }
+
+      if (refresh_token !== session.refreshToken) {
+        throw new UnauthorizedException();
+      }
+      if (session.userId !== refreshTokenPayload.user_id) {
+        throw new UnauthorizedException();
+      }
+      if (session.isBlocked) {
+        throw new UnauthorizedException();
+      }
+
+      const accessPayload = { user_id: refreshTokenPayload.userId };
+      const accessToken = await this.jwtService.signAsync(accessPayload, {
+        expiresIn: this.configService.get('jwt.accessExpiresIn'),
+      });
+
+      return { access_token: accessToken };
+    } catch (err) {
+      if (
+        err instanceof NotFoundException ||
+        err instanceof BadRequestException ||
+        err instanceof UnauthorizedException
+      ) {
+        throw err;
+      }
 
       throw new InternalServerErrorException();
     }

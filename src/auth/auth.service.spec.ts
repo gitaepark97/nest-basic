@@ -5,6 +5,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { generateHashPassword, generateSalt } from '../utils/password';
@@ -20,10 +21,12 @@ const mockUsersRepository = {
 
 const mockSessionsRepository = {
   save: jest.fn(),
+  findOne: jest.fn(),
 };
 
 const mockJwtService = {
   signAsync: jest.fn(),
+  verifyAsync: jest.fn(),
 };
 
 const token = 'token';
@@ -82,17 +85,17 @@ describe('AuthService', () => {
         .spyOn(mockUsersRepository, 'save')
         .mockResolvedValue(user);
 
-      const newUser = await service.register(
+      const result = await service.register(
         req.email,
         req.password,
         req.nickname,
       );
 
-      expect(newUser.email).toEqual(user.email);
-      expect(newUser.nickname).toEqual(user.nickname);
-      expect(newUser.userId).toEqual(user.userId);
-      expect(newUser.createdAt).toEqual(user.createdAt);
-      expect(newUser.updatedAt).toEqual(user.updatedAt);
+      expect(result.email).toEqual(user.email);
+      expect(result.nickname).toEqual(user.nickname);
+      expect(result.userId).toEqual(user.userId);
+      expect(result.createdAt).toEqual(user.createdAt);
+      expect(result.updatedAt).toEqual(user.updatedAt);
 
       saveSpy.mockRestore();
     });
@@ -278,6 +281,195 @@ describe('AuthService', () => {
       }).rejects.toThrowError(new BadRequestException('wrong password'));
 
       saveUsersSpy.mockRestore();
+    });
+  });
+
+  describe('renew access token', () => {
+    it('success', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const expectedSession = {
+        sessionId: uuidv4(),
+        userId: user.userId,
+        refreshToken: token,
+        userAgent,
+        clientIp,
+      };
+
+      const saveJwtSpy1 = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockResolvedValue({
+          id: expectedSession.sessionId,
+          user_id: user.userId,
+        });
+
+      const saveSessionsSpy = jest
+        .spyOn(mockSessionsRepository, 'findOne')
+        .mockResolvedValue(expectedSession);
+
+      const saveJwtSpy2 = jest
+        .spyOn(mockJwtService, 'signAsync')
+        .mockResolvedValue(token);
+
+      const result = await service.renewAccessToken(req.refresh_token);
+
+      expect(result.access_token).toBe(token);
+
+      saveJwtSpy1.mockRestore();
+      saveSessionsSpy.mockRestore();
+      saveJwtSpy2.mockRestore();
+    });
+
+    it('internal server error', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const expectedSession = {
+        sessionId: uuidv4(),
+        userId: user.userId,
+        refreshToken: token,
+        userAgent,
+        clientIp,
+      };
+
+      const expectedError = {
+        code: 'ER_ACCESS_DENIED_ERROR',
+        sqlMessage: 'Access denied. Check username and password.',
+      };
+
+      const saveJwtSpy = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockResolvedValue({
+          id: expectedSession.sessionId,
+          user_id: user.userId,
+        });
+
+      const saveSessionsSpy = jest
+        .spyOn(mockSessionsRepository, 'findOne')
+        .mockRejectedValue(expectedError);
+
+      await expect(async () => {
+        await service.renewAccessToken(req.refresh_token);
+      }).rejects.toThrowError(new InternalServerErrorException());
+
+      saveJwtSpy.mockRestore();
+      saveSessionsSpy.mockRestore();
+    });
+
+    it('invalid refresh token', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const saveJwtSpy = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockRejectedValue(new Error());
+
+      await expect(async () => {
+        await service.renewAccessToken(req.refresh_token);
+      }).rejects.toThrowError(new BadRequestException('invalid refresh token'));
+
+      saveJwtSpy.mockRestore();
+    });
+
+    it('unauthorized refresh token', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const expectedSession = {
+        sessionId: uuidv4(),
+        userId: user.userId,
+        refreshToken: 'invalid token',
+        userAgent,
+        clientIp,
+      };
+
+      const saveJwtSpy = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockResolvedValue({
+          id: expectedSession.sessionId,
+          user_id: user.userId,
+        });
+
+      const saveSessionsSpy = jest
+        .spyOn(mockSessionsRepository, 'findOne')
+        .mockResolvedValue(expectedSession);
+
+      await expect(async () => {
+        await service.renewAccessToken(req.refresh_token);
+      }).rejects.toThrowError(new UnauthorizedException());
+
+      saveJwtSpy.mockRestore();
+      saveSessionsSpy.mockRestore();
+    });
+
+    it('unauthorized user', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const expectedSession = {
+        sessionId: uuidv4(),
+        userId: 0,
+        refreshToken: 'invalid token',
+        userAgent,
+        clientIp,
+      };
+
+      const saveJwtSpy = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockResolvedValue({
+          id: expectedSession.sessionId,
+          user_id: user.userId,
+        });
+
+      const saveSessionsSpy = jest
+        .spyOn(mockSessionsRepository, 'findOne')
+        .mockResolvedValue(expectedSession);
+
+      await expect(async () => {
+        await service.renewAccessToken(req.refresh_token);
+      }).rejects.toThrowError(new UnauthorizedException());
+
+      saveJwtSpy.mockRestore();
+      saveSessionsSpy.mockRestore();
+    });
+
+    it('is blocked', async () => {
+      const req = {
+        refresh_token: token,
+      };
+
+      const expectedSession = {
+        sessionId: uuidv4(),
+        userId: 0,
+        refreshToken: 'invalid token',
+        userAgent,
+        clientIp,
+        isBlocked: true,
+      };
+
+      const saveJwtSpy = jest
+        .spyOn(mockJwtService, 'verifyAsync')
+        .mockResolvedValue({
+          id: expectedSession.sessionId,
+          user_id: user.userId,
+        });
+
+      const saveSessionsSpy = jest
+        .spyOn(mockSessionsRepository, 'findOne')
+        .mockResolvedValue(expectedSession);
+
+      await expect(async () => {
+        await service.renewAccessToken(req.refresh_token);
+      }).rejects.toThrowError(new UnauthorizedException());
+
+      saveJwtSpy.mockRestore();
+      saveSessionsSpy.mockRestore();
     });
   });
 });

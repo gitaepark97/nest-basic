@@ -214,7 +214,7 @@ describe('AuthController (e2e)', () => {
     const password = createRandomString(10);
     const nickname = createRandomString(15);
 
-    it('register', async () => {
+    beforeAll(async () => {
       await request(app.getHttpServer()).post('/api/auth/register').send({
         email,
         password,
@@ -343,6 +343,86 @@ describe('AuthController (e2e)', () => {
 
       expect(statusCode).toBe(400);
       expect(body.message).toEqual('wrong password');
+    });
+  });
+
+  describe('renew refresh token (POST)', () => {
+    let refresh_token;
+
+    beforeAll(async () => {
+      const email = createRandomEmail();
+      const password = createRandomString(10);
+      const nickname = createRandomString(15);
+
+      await request(app.getHttpServer()).post('/api/auth/register').send({
+        email,
+        password,
+        nickname,
+      });
+
+      const { body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email,
+          password,
+        })
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      refresh_token = body.refresh_token;
+    });
+
+    it('success', async () => {
+      const req = {
+        refresh_token,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(201);
+      expect(typeof body.access_token).toBe('string');
+    });
+
+    it('required refresh token', async () => {
+      const req = {};
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'refresh_token should not be empty',
+        'refresh_token must be a string',
+      ]);
+    });
+
+    it('invalid refresh token type', async () => {
+      const req = {
+        refresh_token: 1,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual(['refresh_token must be a string']);
+    });
+
+    it('invalid refresh token', async () => {
+      const req = {
+        refresh_token: 'invalid refresh token',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual('invalid refresh token');
     });
   });
 });

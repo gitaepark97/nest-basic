@@ -4,11 +4,18 @@ import { RegisterRequestDto, UserResponseDto } from './dto/register.dto';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginRequestDto, LoginResponseDto } from './dto/login.dto';
 import { Request } from 'express';
+import {
+  RenewAccessTokenRequestDto,
+  RenewAccessTokenResponseDto,
+} from './dto/renewAccessToken.dto';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -33,12 +40,12 @@ export class AuthController {
               message: "Duplicate entry 'test' for key 'nickname'",
             },
           },
-          invalidEmail: {
+          invalidEmailParameter: {
             value: {
               message: ['email should not be empty', 'email must be an email'],
             },
           },
-          invalidPassword: {
+          invalidPasswordParameter: {
             value: {
               message: [
                 'password should not be empty',
@@ -46,13 +53,26 @@ export class AuthController {
               ],
             },
           },
-          invalidNickname: {
+          invalidNicknameParameter: {
             value: {
               message: [
                 'nickname must be shorter than or equal to 50 characters',
                 'nickname should not be empty',
                 'nickname must be a string',
               ],
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    content: {
+      'application/json': {
+        examples: {
+          internalServerError: {
+            value: {
+              message: 'Internal Server Error',
             },
           },
         },
@@ -82,17 +102,43 @@ export class AuthController {
               message: 'wrong password',
             },
           },
-          invalidEmail: {
+          invalidEmailParameter: {
             value: {
               message: ['email should not be empty', 'email must be an email'],
             },
           },
-          invalidPassword: {
+          invalidPasswordParameter: {
             value: {
               message: [
                 'password should not be empty',
                 'password must be a string',
               ],
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    content: {
+      'application/json': {
+        examples: {
+          notFoundUser: {
+            value: {
+              message: 'not found user',
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    content: {
+      'application/json': {
+        examples: {
+          internalServerError: {
+            value: {
+              message: 'Internal Server Error',
             },
           },
         },
@@ -110,5 +156,84 @@ export class AuthController {
       userAgent,
       clientIp,
     );
+  }
+
+  @ApiOperation({ summary: '액세스 토큰 재발급' })
+  @ApiCreatedResponse({
+    type: RenewAccessTokenResponseDto,
+  })
+  @ApiBadRequestResponse({
+    content: {
+      'application/json': {
+        examples: {
+          invalidRefreshToken: {
+            value: {
+              message: 'invalid refresh token',
+            },
+          },
+          invalidRefreshTokenParameter: {
+            value: {
+              message: [
+                'refresh token should not be empty',
+                'refresh token must be a string',
+              ],
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    content: {
+      'application/json': {
+        examples: {
+          unauthorizedToken: {
+            value: {
+              message: 'Unauthorized',
+            },
+          },
+          unauthorizedUser: {
+            value: {
+              message: 'Unauthorized',
+            },
+          },
+          isBlocked: {
+            value: {
+              message: 'Unauthorized',
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiNotFoundResponse({
+    content: {
+      'application/json': {
+        examples: {
+          notFoundSession: {
+            value: {
+              message: 'not found session',
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    content: {
+      'application/json': {
+        examples: {
+          internalServerError: {
+            value: {
+              message: 'Internal Server Error',
+            },
+          },
+        },
+      },
+    },
+  })
+  @Post('renew-access-token')
+  renewAccessToken(@Body() body: RenewAccessTokenRequestDto) {
+    return this.authService.renewAccessToken(body.refresh_token);
   }
 }
