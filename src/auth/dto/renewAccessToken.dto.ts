@@ -20,5 +20,5 @@ export class RenewAccessTokenResponseDto {
   })
   @IsString()
   @IsNotEmpty()
-  access_token: string;
+  accessToken: string;
 }

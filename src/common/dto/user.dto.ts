@@ -32,7 +32,7 @@ export class UserResponseDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  user_id: number;
 
   @ApiProperty({
     example: '0000-00-00T00:00:00.000Z',
@@ -40,7 +40,7 @@ export class UserResponseDto {
   })
   @IsDate()
   @IsNotEmpty()
-  createdAt: Date;
+  created_at: Date;
 
   @ApiProperty({
     example: '0000-00-00T00:00:00.000Z',
@@ -48,5 +48,5 @@ export class UserResponseDto {
   })
   @IsDate()
   @IsNotEmpty()
-  updatedAt: Date;
+  updated_at: Date;
 }

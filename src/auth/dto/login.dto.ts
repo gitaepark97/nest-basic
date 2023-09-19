@@ -27,7 +27,7 @@ export class LoginResponseDto {
   })
   @IsUUID()
   @IsNotEmpty()
-  session_id: string;
+  sessionId: string;
 
   @ApiProperty({
     example:
@@ -36,7 +36,7 @@ export class LoginResponseDto {
   })
   @IsString()
   @IsNotEmpty()
-  access_token: string;
+  accessToken: string;
 
   @ApiProperty({
     example:
@@ -45,7 +45,18 @@ export class LoginResponseDto {
   })
   @IsString()
   @IsNotEmpty()
-  refresh_token: string;
+  refreshToken: string;
 
+  @ApiProperty({
+    example: {
+      email: 'test@email.com',
+      nickname: 'test',
+      userId: 1,
+      createdAt: '0000-00-00T00:00:00.000Z',
+      updatedAt: '0000-00-00T00:00:00.000Z',
+    },
+    description: '회원 정보',
+  })
+  @IsNotEmpty()
   user: UserResponseDto;
 }

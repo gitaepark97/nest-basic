@@ -18,13 +18,14 @@ export class Categories {
   @Column('varchar', { name: 'title', unique: true, length: 50 })
   title: string;
 
-  @Column('int', { name: 'parent_category_id', nullable: true })
+  @Column('int', { name: 'parent_category_id', nullable: true, select: false })
   parentCategoryId: number | null;
 
   @CreateDateColumn({
     type: 'timestamp',
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
+    select: false,
   })
   createdAt: Date;
 
@@ -33,6 +34,7 @@ export class Categories {
     name: 'updated_at',
     default: () => 'CURRENT_TIMESTAMP',
     onUpdate: 'CURRENT_TIMESTAMP',
+    select: false,
   })
   updatedAt: Date;
 

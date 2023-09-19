@@ -4,12 +4,11 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { HttpExceptionFilter } from './../src/filters/http-exception.filter';
 import { createRandomEmail, createRandomString } from './utils/random';
-import { sleep } from './utils/sleep';
 
 const userAgent = 'test agent';
 const clientIp = ':::1';
 
-describe('UsersController (e2e)', () => {
+describe('CategoriesController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -33,12 +32,10 @@ describe('UsersController (e2e)', () => {
     await app.init();
   });
 
-  describe('update user (PATCH)', () => {
-    let user;
+  describe('get category list (GET)', () => {
     let accessToken;
     const nickname1 = createRandomString(15);
     const nickname2 = createRandomString(15);
-    const updatedNickname = createRandomString(15);
 
     it('before', async () => {
       const email1 = createRandomEmail();
@@ -66,29 +63,20 @@ describe('UsersController (e2e)', () => {
         .set('User-Agent', userAgent)
         .set('X-Forwarded-For', clientIp);
 
-      user = body.user;
       accessToken = body.accessToken;
     });
 
     it('success', async () => {
-      const req = {
-        nickname: updatedNickname,
-      };
-
-      await sleep(1000);
-
       const { statusCode, body } = await request(app.getHttpServer())
-        .patch('/api/users')
-        .send(req)
+        .get('/api/categories')
         .set('Authorization', `Bearer ${accessToken}`);
 
       expect(statusCode).toBe(200);
-      expect(body.email).toBe(user.email);
-      expect(body.nickname).toBe(req.nickname);
-      expect(body.userId).toBe(user.userId);
-      expect(body.createdAt).toBe(user.createdAt);
-      expect(body.updatedAt).toBeDefined();
-      expect(body.updatedAt).not.toEqual(user.updatedAt);
+
+      body.list.forEach((category) => {
+        expect(typeof category.categoryId).toBe('number');
+        expect(typeof category.title).toBe('string');
+      });
     });
   });
 });

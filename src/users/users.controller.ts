@@ -5,9 +5,9 @@ import { AuthGuard } from '../auth/auth.guard';
 import { User } from '../common/decorators/user.decorator';
 import {
   ApiBadRequestResponse,
-  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -20,7 +20,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: '회원 정보 수정' })
-  @ApiCreatedResponse({
+  @ApiOkResponse({
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({

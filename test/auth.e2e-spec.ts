@@ -235,9 +235,9 @@ describe('AuthController (e2e)', () => {
         .set('X-Forwarded-For', clientIp);
 
       expect(statusCode).toBe(201);
-      expect(typeof body.session_id).toBe('string');
-      expect(typeof body.access_token).toBe('string');
-      expect(typeof body.refresh_token).toBe('string');
+      expect(typeof body.sessionId).toBe('string');
+      expect(typeof body.accessToken).toBe('string');
+      expect(typeof body.refreshToken).toBe('string');
       expect(body.user.email).toBe(req.email);
       expect(body.user.nickname).toBe(nickname);
       expect(typeof body.user.userId).toBe('number');
@@ -347,9 +347,9 @@ describe('AuthController (e2e)', () => {
   });
 
   describe('renew refresh token (POST)', () => {
-    let refresh_token;
+    let refreshToken;
 
-    it('befor', async () => {
+    it('before', async () => {
       const email = createRandomEmail();
       const password = createRandomString(10);
       const nickname = createRandomString(15);
@@ -369,12 +369,12 @@ describe('AuthController (e2e)', () => {
         .set('User-Agent', userAgent)
         .set('X-Forwarded-For', clientIp);
 
-      refresh_token = body.refresh_token;
+      refreshToken = body.refreshToken;
     });
 
     it('success', async () => {
       const req = {
-        refresh_token,
+        refresh_token: refreshToken,
       };
 
       const { statusCode, body } = await request(app.getHttpServer())
@@ -382,7 +382,7 @@ describe('AuthController (e2e)', () => {
         .send(req);
 
       expect(statusCode).toBe(201);
-      expect(typeof body.access_token).toBe('string');
+      expect(typeof body.accessToken).toBe('string');
     });
 
     it('required refresh token', async () => {

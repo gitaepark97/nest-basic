@@ -107,9 +107,9 @@ export class AuthService {
       delete user.salt;
 
       return {
-        session_id: session.sessionId,
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        sessionId: session.sessionId,
+        accessToken,
+        refreshToken,
         user,
       };
     } catch (err) {
@@ -155,7 +155,7 @@ export class AuthService {
         expiresIn: this.configService.get('jwt.accessExpiresIn'),
       });
 
-      return { access_token: accessToken };
+      return { accessToken };
     } catch (err) {
       if (
         err instanceof NotFoundException ||

@@ -209,9 +209,9 @@ describe('AuthService', () => {
         clientIp,
       );
 
-      expect(result.session_id).toBe(expectedSession.sessionId);
-      expect(result.access_token).toBe(token);
-      expect(result.refresh_token).toBe(token);
+      expect(result.sessionId).toBe(expectedSession.sessionId);
+      expect(result.accessToken).toBe(token);
+      expect(result.refreshToken).toBe(token);
       expect(result.user.email).toEqual(expectedUser.email);
       expect(result.user.nickname).toEqual(expectedUser.nickname);
       expect(result.user.userId).toEqual(expectedUser.userId);
@@ -313,7 +313,7 @@ describe('AuthService', () => {
 
       const result = await service.renewAccessToken(req.refresh_token);
 
-      expect(result.access_token).toBe(token);
+      expect(result.accessToken).toBe(token);
 
       saveJwtSpy1.mockRestore();
       saveSessionsSpy.mockRestore();
