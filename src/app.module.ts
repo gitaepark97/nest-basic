@@ -16,6 +16,7 @@ import { ChatRoomUsers } from './entities/ChatRoomUsers';
 import { Chats } from './entities/Chats';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { CategoriesModule } from './categories/categories.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CategoriesModule } from './categories/categories.module';
     PostsModule,
     AuthModule,
     CategoriesModule,
+    EventsModule,
   ],
   controllers: [AppController],
 })

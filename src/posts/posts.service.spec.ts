@@ -74,7 +74,6 @@ describe('PostsService', () => {
       };
 
       const expectedPost = post;
-      console.log(expectedPost);
 
       const savePostsSpy = jest
         .spyOn(mockPostsRepository, 'save')
