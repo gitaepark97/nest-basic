@@ -7,6 +7,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import {
+  createRandomEmail,
+  createRandomInt,
+  createRandomString,
+} from '../../test/utils/random';
 
 const mockUsersRepository = {
   update: jest.fn(),
@@ -28,10 +33,9 @@ describe('UsersService', () => {
     service = module.get<UsersService>(UsersService);
 
     user = {
-      email: 'test@email.com',
-      nickname: 'test',
-      password: 'password',
-      userId: 1,
+      userId: createRandomInt(1, 10),
+      email: createRandomEmail(),
+      nickname: createRandomString(15),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -52,11 +56,11 @@ describe('UsersService', () => {
         nickname: req.nickname,
       };
 
-      const saveUserSpy = jest
+      const findOneUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(expectedUser);
 
-      const result = await service.updateUser(user.user_id, req.nickname);
+      const result = await service.updateUser(user.userId, req.nickname);
 
       expect(result.email).toEqual(expectedUser.email);
       expect(result.nickname).toEqual(expectedUser.nickname);
@@ -64,26 +68,26 @@ describe('UsersService', () => {
       expect(result.createdAt).toEqual(expectedUser.createdAt);
       expect(result.updatedAt).toEqual(expectedUser.updatedAt);
 
-      saveUserSpy.mockRestore();
+      findOneUsersSpy.mockRestore();
     });
   });
 
   it('internal server error', async () => {
     const req = {
-      nickname: 'updatedTest',
+      nickname: createRandomString(15),
     };
 
     const expectedError = new Error();
 
-    const saveUsersSpy = jest
+    const findOneUsersSpy = jest
       .spyOn(mockUsersRepository, 'findOne')
       .mockRejectedValue(expectedError);
 
     await expect(async () => {
-      await service.updateUser(user.user_id, req.nickname);
+      await service.updateUser(user.userId, req.nickname);
     }).rejects.toThrowError(new InternalServerErrorException());
 
-    saveUsersSpy.mockRestore();
+    findOneUsersSpy.mockRestore();
   });
 
   it('not found user', async () => {
@@ -91,15 +95,15 @@ describe('UsersService', () => {
       nickname: 'updatedTest',
     };
 
-    const saveUsersSpy = jest
+    const findOneUsersSpy = jest
       .spyOn(mockUsersRepository, 'findOne')
       .mockResolvedValue(null);
 
     await expect(async () => {
-      await service.updateUser(user.user_id, req.nickname);
+      await service.updateUser(0, req.nickname);
     }).rejects.toThrowError(new NotFoundException('not found user'));
 
-    saveUsersSpy.mockRestore();
+    findOneUsersSpy.mockRestore();
   });
 
   it('duplicate nickname', async () => {
@@ -112,14 +116,14 @@ describe('UsersService', () => {
       sqlMessage: "Duplicate entry 'test@email.com' for key 'email'",
     };
 
-    const saveUsersSpy = jest
+    const updateUsersSpy = jest
       .spyOn(mockUsersRepository, 'update')
       .mockRejectedValue(expectedError);
 
     await expect(async () => {
-      await service.updateUser(user.user_id, req.nickname);
+      await service.updateUser(user.userId, req.nickname);
     }).rejects.toThrowError(new BadRequestException(expectedError.sqlMessage));
 
-    saveUsersSpy.mockRestore();
+    updateUsersSpy.mockRestore();
   });
 });

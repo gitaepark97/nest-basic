@@ -28,7 +28,7 @@
 
 - Start mariadb container:
   ```bash
-  npm run start:db
+  npm run create:db
   ```
 - Remove mariadb container:
   ```bash

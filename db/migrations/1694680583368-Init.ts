@@ -34,10 +34,9 @@ export class Init1694680583368 implements MigrationInterface {
         \`title\` varchar(255) NOT NULL,
         \`thumbnail_image_url\` varchar(255) NOT NULL,
         \`description\` text NOT NULL,
-        \`is_delete\` boolean NOT NULL DEFAULT (false),
         \`created_at\` timestamp NOT NULL DEFAULT (now()),
         \`updated_at\` timestamp NOT NULL DEFAULT (now()),
-        \`deleted_at\` timestamp NOT NULL
+        \`deleted_at\` timestamp DEFAULT NULL
       );`);
     await queryRunner.query(`CREATE TABLE \`chat_rooms\` (
         \`chat_room_id\` int PRIMARY KEY AUTO_INCREMENT,
@@ -59,9 +58,6 @@ export class Init1694680583368 implements MigrationInterface {
         \`created_at\` timestamp NOT NULL DEFAULT (now())
       );`);
     await queryRunner.query(`CREATE INDEX \`title\` ON \`posts\` (\`title\`);`);
-    await queryRunner.query(
-      `CREATE INDEX \`is_delete\` ON \`posts\` (\`is_delete\`);`,
-    );
     await queryRunner.query(
       `ALTER TABLE \`sessions\` ADD FOREIGN KEY (\`user_id\`) REFERENCES \`users\` (\`user_id\`) ON DELETE CASCADE;`,
     );

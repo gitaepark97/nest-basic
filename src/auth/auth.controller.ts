@@ -15,7 +15,7 @@ import {
   RenewAccessTokenRequestDto,
   RenewAccessTokenResponseDto,
 } from './dto/renewAccessToken.dto';
-import { UserResponseDto } from '../common/dto/user.dto';
+import { UserResponseDto } from '../users/dto/user.dto';
 
 @ApiTags('AUTH')
 @Controller('auth')

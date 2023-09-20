@@ -13,7 +13,6 @@ import { Users } from './Users';
 import { Categories } from './Categories';
 
 @Index('title', ['title'], {})
-@Index('is_delete', ['isDelete'], {})
 @Index('user_id', ['userId'], {})
 @Index('category_id', ['categoryId'], {})
 @Entity('posts', { schema: 'basic' })
@@ -36,9 +35,6 @@ export class Posts {
   @Column('text', { name: 'description' })
   description: string;
 
-  @Column('tinyint', { name: 'is_delete', width: 1, default: () => "'0'" })
-  isDelete: boolean;
-
   @CreateDateColumn({
     type: 'timestamp',
     name: 'created_at',
@@ -54,7 +50,7 @@ export class Posts {
   })
   updatedAt: Date;
 
-  @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at' })
+  @DeleteDateColumn({ type: 'timestamp', name: 'deleted_at', select: false })
   deletedAt: Date;
 
   @ManyToOne(() => Users, (users) => users.posts, {

@@ -326,7 +326,7 @@ describe('AuthController (e2e)', () => {
         .set('X-Forwarded-For', clientIp);
 
       expect(statusCode).toBe(404);
-      expect(body.message).toEqual('not found user');
+      expect(body.message).toBe('not found user');
     });
 
     it('wrong password', async () => {
@@ -342,7 +342,7 @@ describe('AuthController (e2e)', () => {
         .set('X-Forwarded-For', clientIp);
 
       expect(statusCode).toBe(400);
-      expect(body.message).toEqual('wrong password');
+      expect(body.message).toBe('wrong password');
     });
   });
 
@@ -422,7 +422,7 @@ describe('AuthController (e2e)', () => {
         .send(req);
 
       expect(statusCode).toBe(400);
-      expect(body.message).toEqual('invalid refresh token');
+      expect(body.message).toBe('invalid refresh token');
     });
   });
 });

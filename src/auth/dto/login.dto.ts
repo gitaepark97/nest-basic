@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { UserResponseDto } from '../../common/dto/user.dto';
+import { UserResponseDto } from '../../users/dto/user.dto';
 
 export class LoginRequestDto {
   @ApiProperty({
@@ -49,9 +49,9 @@ export class LoginResponseDto {
 
   @ApiProperty({
     example: {
+      userId: 1,
       email: 'test@email.com',
       nickname: 'test',
-      userId: 1,
       createdAt: '0000-00-00T00:00:00.000Z',
       updatedAt: '0000-00-00T00:00:00.000Z',
     },

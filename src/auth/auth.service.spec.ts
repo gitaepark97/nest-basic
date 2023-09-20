@@ -13,6 +13,11 @@ import { Sessions } from '../entities/Sessions';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import {
+  createRandomEmail,
+  createRandomInt,
+  createRandomString,
+} from '../../test/utils/random';
 
 const mockUsersRepository = {
   save: jest.fn(),
@@ -29,7 +34,7 @@ const mockJwtService = {
   verifyAsync: jest.fn(),
 };
 
-const token = 'token';
+const token = createRandomString(50);
 const userAgent = 'user-agent';
 const clientIp = ':::1';
 
@@ -54,10 +59,10 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
 
     user = {
-      email: 'test@email.com',
-      nickname: 'test',
-      password: 'password',
-      userId: 1,
+      userId: createRandomInt(1, 10),
+      email: createRandomEmail(),
+      nickname: createRandomString(15),
+      password: createRandomString(10),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -190,7 +195,7 @@ describe('AuthService', () => {
         clientIp,
       };
 
-      const saveUsersSpy = jest
+      const findOneUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(expectedUser);
 
@@ -198,7 +203,7 @@ describe('AuthService', () => {
         .spyOn(mockSessionsRepository, 'save')
         .mockResolvedValue(expectedSession);
 
-      const saveJwtSpy = jest
+      const signAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'signAsync')
         .mockResolvedValue(token);
 
@@ -218,9 +223,9 @@ describe('AuthService', () => {
       expect(result.user.createdAt).toEqual(expectedUser.createdAt);
       expect(result.user.updatedAt).toEqual(expectedUser.updatedAt);
 
-      saveUsersSpy.mockRestore();
+      findOneUsersSpy.mockRestore();
       saveSessionsSpy.mockRestore();
-      saveJwtSpy.mockRestore();
+      signAsyncJwtSpy.mockRestore();
     });
 
     it('internal server error', async () => {
@@ -231,7 +236,7 @@ describe('AuthService', () => {
 
       const expectedError = new Error();
 
-      const saveUsersSpy = jest
+      const findOneUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(user);
 
@@ -243,7 +248,7 @@ describe('AuthService', () => {
         await service.login(req.email, req.password, userAgent, clientIp);
       }).rejects.toThrowError(new InternalServerErrorException());
 
-      saveUsersSpy.mockRestore();
+      findOneUsersSpy.mockRestore();
       saveSessionsSpy.mockRestore();
     });
 
@@ -253,7 +258,7 @@ describe('AuthService', () => {
         password: user.password,
       };
 
-      const saveUsersSpy = jest
+      const findOneUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(null);
 
@@ -261,7 +266,7 @@ describe('AuthService', () => {
         await service.login(req.email, req.password, userAgent, clientIp);
       }).rejects.toThrowError(new NotFoundException('not found user'));
 
-      saveUsersSpy.mockRestore();
+      findOneUsersSpy.mockRestore();
     });
 
     it('invalid password', async () => {
@@ -270,7 +275,7 @@ describe('AuthService', () => {
         password: 'invalidPassword',
       };
 
-      const saveUsersSpy = jest
+      const findOneUsersSpy = jest
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(user);
 
@@ -278,7 +283,7 @@ describe('AuthService', () => {
         await service.login(req.email, req.password, userAgent, clientIp);
       }).rejects.toThrowError(new BadRequestException('wrong password'));
 
-      saveUsersSpy.mockRestore();
+      findOneUsersSpy.mockRestore();
     });
   });
 
@@ -296,18 +301,18 @@ describe('AuthService', () => {
         clientIp,
       };
 
-      const saveJwtSpy1 = jest
+      const verifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockResolvedValue({
           id: expectedSession.sessionId,
-          user_id: user.userId,
+          userId: user.userId,
         });
 
-      const saveSessionsSpy = jest
+      const findOneSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'findOne')
         .mockResolvedValue(expectedSession);
 
-      const saveJwtSpy2 = jest
+      const signAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'signAsync')
         .mockResolvedValue(token);
 
@@ -315,9 +320,9 @@ describe('AuthService', () => {
 
       expect(result.accessToken).toBe(token);
 
-      saveJwtSpy1.mockRestore();
-      saveSessionsSpy.mockRestore();
-      saveJwtSpy2.mockRestore();
+      verifyAsyncJwtSpy.mockRestore();
+      findOneSessionsSpy.mockRestore();
+      signAsyncJwtSpy.mockRestore();
     });
 
     it('internal server error', async () => {
@@ -335,14 +340,14 @@ describe('AuthService', () => {
 
       const expectedError = new Error();
 
-      const saveJwtSpy = jest
+      const verifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockResolvedValue({
           id: expectedSession.sessionId,
-          user_id: user.userId,
+          userId: user.userId,
         });
 
-      const saveSessionsSpy = jest
+      const findOneSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'findOne')
         .mockRejectedValue(expectedError);
 
@@ -350,8 +355,8 @@ describe('AuthService', () => {
         await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new InternalServerErrorException());
 
-      saveJwtSpy.mockRestore();
-      saveSessionsSpy.mockRestore();
+      verifyAsyncJwtSpy.mockRestore();
+      findOneSessionsSpy.mockRestore();
     });
 
     it('invalid refresh token', async () => {
@@ -359,7 +364,7 @@ describe('AuthService', () => {
         refreshToken: token,
       };
 
-      const saveJwtSpy = jest
+      const verifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockRejectedValue(new Error());
 
@@ -367,7 +372,7 @@ describe('AuthService', () => {
         await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new BadRequestException('invalid refresh token'));
 
-      saveJwtSpy.mockRestore();
+      verifyAsyncJwtSpy.mockRestore();
     });
 
     it('unauthorized refresh token', async () => {
@@ -383,14 +388,14 @@ describe('AuthService', () => {
         clientIp,
       };
 
-      const saveJwtSpy = jest
+      const verifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockResolvedValue({
           id: expectedSession.sessionId,
-          user_id: user.userId,
+          userId: user.userId,
         });
 
-      const saveSessionsSpy = jest
+      const findOneSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'findOne')
         .mockResolvedValue(expectedSession);
 
@@ -398,8 +403,8 @@ describe('AuthService', () => {
         await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
-      saveJwtSpy.mockRestore();
-      saveSessionsSpy.mockRestore();
+      verifyAsyncJwtSpy.mockRestore();
+      findOneSessionsSpy.mockRestore();
     });
 
     it('unauthorized user', async () => {
@@ -415,14 +420,14 @@ describe('AuthService', () => {
         clientIp,
       };
 
-      const saveJwtSpy = jest
+      const verifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockResolvedValue({
           id: expectedSession.sessionId,
-          user_id: user.userId,
+          userId: user.userId,
         });
 
-      const saveSessionsSpy = jest
+      const findOneSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'findOne')
         .mockResolvedValue(expectedSession);
 
@@ -430,8 +435,8 @@ describe('AuthService', () => {
         await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
-      saveJwtSpy.mockRestore();
-      saveSessionsSpy.mockRestore();
+      verifyAsyncJwtSpy.mockRestore();
+      findOneSessionsSpy.mockRestore();
     });
 
     it('is blocked', async () => {
@@ -448,14 +453,14 @@ describe('AuthService', () => {
         isBlocked: true,
       };
 
-      const saveJwtSpy = jest
+      const valifyAsyncJwtSpy = jest
         .spyOn(mockJwtService, 'verifyAsync')
         .mockResolvedValue({
           id: expectedSession.sessionId,
-          user_id: user.userId,
+          userId: user.userId,
         });
 
-      const saveSessionsSpy = jest
+      const findOneSessionsSpy = jest
         .spyOn(mockSessionsRepository, 'findOne')
         .mockResolvedValue(expectedSession);
 
@@ -463,8 +468,8 @@ describe('AuthService', () => {
         await service.renewAccessToken(req.refreshToken);
       }).rejects.toThrowError(new UnauthorizedException());
 
-      saveJwtSpy.mockRestore();
-      saveSessionsSpy.mockRestore();
+      valifyAsyncJwtSpy.mockRestore();
+      findOneSessionsSpy.mockRestore();
     });
   });
 });

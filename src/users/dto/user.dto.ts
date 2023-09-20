@@ -36,7 +36,7 @@ export class UserResponseDto {
 
   @ApiProperty({
     example: '0000-00-00T00:00:00.000Z',
-    description: '회원 ID',
+    description: '생성 시간',
   })
   @IsDate()
   @IsNotEmpty()
@@ -44,7 +44,7 @@ export class UserResponseDto {
 
   @ApiProperty({
     example: '0000-00-00T00:00:00.000Z',
-    description: '회원 ID',
+    description: '수정 시간',
   })
   @IsDate()
   @IsNotEmpty()

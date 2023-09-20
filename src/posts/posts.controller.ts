@@ -1,37 +1,32 @@
-import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
-import { UpdateUserRequestDto } from './dto/updateUser.dto';
-import { UsersService } from './users.service';
-import { AuthGuard } from '../auth/auth.guard';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { PostsService } from './posts.service';
 import { User } from '../decorators/user.decorator';
+import { CreatePostRequestDto } from './dto/createPost.dto';
+import { AuthGuard } from '../auth/auth.guard';
 import {
   ApiBadRequestResponse,
+  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UserResponseDto } from './dto/user.dto';
+import { PostResponseDto } from './dto/post.dto';
 
-@ApiTags('USERS')
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@ApiTags('POSTS')
+@Controller('posts')
+export class PostsController {
+  constructor(private readonly postsService: PostsService) {}
 
-  @ApiOperation({ summary: '회원 정보 수정' })
-  @ApiOkResponse({
-    type: UserResponseDto,
+  @ApiOperation({ summary: '글 생성' })
+  @ApiCreatedResponse({
+    type: PostResponseDto,
   })
   @ApiBadRequestResponse({
     content: {
       'application/json': {
         examples: {
-          duplicateNickname: {
-            value: {
-              message: "Duplicate entry 'test' for key 'nickname'",
-            },
-          },
           invalidNicknameParameter: {
             value: {
               message: [
@@ -64,7 +59,14 @@ export class UsersController {
         examples: {
           notFoundUser: {
             value: {
-              message: 'not found user',
+              message:
+                'Cannot add or update a child row: a foreign key constraint fails (`basic`.`posts`, CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`))',
+            },
+          },
+          notFoundCategory: {
+            value: {
+              message:
+                'Cannot add or update a child row: a foreign key constraint fails (`basic`.`posts`, CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`))',
             },
           },
         },
@@ -85,8 +87,14 @@ export class UsersController {
     },
   })
   @UseGuards(AuthGuard)
-  @Patch('')
-  updateUser(@User() user, @Body() body: UpdateUserRequestDto) {
-    return this.usersService.updateUser(user.userId, body.nickname);
+  @Post('')
+  createPost(@User() user, @Body() body: CreatePostRequestDto) {
+    return this.postsService.createPost(
+      user.userId,
+      body.categoryId,
+      body.title,
+      body.thumbnailImageUrl,
+      body.description,
+    );
   }
 }

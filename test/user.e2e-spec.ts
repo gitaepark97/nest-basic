@@ -2,8 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { HttpExceptionFilter } from './../src/filters/http-exception.filter';
-import { createRandomEmail, createRandomString } from './utils/random';
+import { HttpExceptionFilter } from '../src/filters/http-exception.filter';
+import {
+  createRandomEmail,
+  createRandomInt,
+  createRandomString,
+} from './utils/random';
 import { sleep } from './utils/sleep';
 
 const userAgent = 'test agent';
@@ -89,6 +93,84 @@ describe('UsersController (e2e)', () => {
       expect(body.createdAt).toBe(user.createdAt);
       expect(body.updatedAt).toBeDefined();
       expect(body.updatedAt).not.toEqual(user.updatedAt);
+    });
+
+    it('Uuauthorized', async () => {
+      const req = {
+        nickname: updatedNickname,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .patch('/api/users')
+        .send(req);
+
+      expect(statusCode).toBe(401);
+      expect(body.message).toBe('Unauthorized');
+    });
+
+    it('required nickname', async () => {
+      const req = {};
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .patch('/api/users')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'nickname must be shorter than or equal to 50 characters',
+        'nickname should not be empty',
+        'nickname must be a string',
+      ]);
+    });
+
+    it('invalid nickname type', async () => {
+      const req = {
+        nickname: createRandomInt(1, 10),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .patch('/api/users')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'nickname must be shorter than or equal to 50 characters',
+        'nickname must be a string',
+      ]);
+    });
+
+    it('invalid nickname length', async () => {
+      const req = {
+        nickname: createRandomString(51),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .patch('/api/users')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'nickname must be shorter than or equal to 50 characters',
+      ]);
+    });
+
+    it('duplicate nickname', async () => {
+      const req = {
+        nickname: nickname2,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .patch('/api/users')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toBe(
+        `Duplicate entry '${nickname2}' for key 'nickname'`,
+      );
     });
   });
 });

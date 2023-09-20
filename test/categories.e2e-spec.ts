@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { HttpExceptionFilter } from './../src/filters/http-exception.filter';
+import { HttpExceptionFilter } from '../src/filters/http-exception.filter';
 import { createRandomEmail, createRandomString } from './utils/random';
 
 const userAgent = 'test agent';
