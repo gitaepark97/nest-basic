@@ -28,6 +28,11 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterEach((done) => {
+    app.close();
+    done();
+  });
+
   describe('health-check (GET)', () => {
     it('success', () => {
       return request(app.getHttpServer()).get('/api/health-check').expect(200);

@@ -37,6 +37,11 @@ describe('UsersController (e2e)', () => {
     await app.init();
   });
 
+  afterEach((done) => {
+    app.close();
+    done();
+  });
+
   describe('update user (PATCH)', () => {
     let user;
     let accessToken;

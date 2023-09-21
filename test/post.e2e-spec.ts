@@ -36,6 +36,11 @@ describe('PostsController (e2e)', () => {
     await app.init();
   });
 
+  afterEach((done) => {
+    app.close();
+    done();
+  });
+
   describe('create post (POST)', () => {
     let user;
     let accessToken;

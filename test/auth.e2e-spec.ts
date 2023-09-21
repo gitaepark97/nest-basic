@@ -36,6 +36,11 @@ describe('AuthController (e2e)', () => {
     await app.init();
   });
 
+  afterEach((done) => {
+    app.close();
+    done();
+  });
+
   describe('register (POST)', () => {
     const email = createRandomEmail();
     const nickname = createRandomString(15);

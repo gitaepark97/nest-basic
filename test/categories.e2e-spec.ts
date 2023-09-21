@@ -32,6 +32,11 @@ describe('CategoriesController (e2e)', () => {
     await app.init();
   });
 
+  afterEach((done) => {
+    app.close();
+    done();
+  });
+
   describe('get category list (GET)', () => {
     let accessToken;
     const nickname1 = createRandomString(15);
