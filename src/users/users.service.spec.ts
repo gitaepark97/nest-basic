@@ -36,8 +36,8 @@ describe('UsersService', () => {
       userId: createRandomInt(1, 10),
       email: createRandomEmail(),
       nickname: createRandomString(15),
-      createdAt: new Date('2023-10-10'),
-      updatedAt: new Date('2023-10-10'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   });
 
@@ -54,7 +54,7 @@ describe('UsersService', () => {
       const expectedUser = {
         ...user,
         nickname: req.nickname,
-        updatedAt: new Date('2023-10-11'),
+        updatedAt: new Date(),
       };
 
       const findOneUsersSpy = jest

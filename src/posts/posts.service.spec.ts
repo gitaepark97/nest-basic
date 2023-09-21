@@ -37,8 +37,8 @@ describe('PostsService', () => {
       userId: createRandomInt(1, 10),
       email: createRandomEmail(),
       nickname: createRandomString(15),
-      createdAt: new Date('2023-10-10'),
-      updatedAt: new Date('2023-10-10'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     category = {
@@ -53,8 +53,8 @@ describe('PostsService', () => {
       title: createRandomString(10),
       thumbnailImageUrl: createRandomString(50),
       description: createRandomString(100),
-      createdAt: new Date('2023-10-10'),
-      updatedAt: new Date('2023-10-10'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       user,
       category,
     };
@@ -96,8 +96,8 @@ describe('PostsService', () => {
       expect(result.user.userId).toBe(expectedPost.user.userId);
       expect(result.user.email).toBe(expectedPost.user.email);
       expect(result.user.nickname).toBe(expectedPost.user.nickname);
-      expect(result.user.createdAt).toEqual(expectedPost.createdAt);
-      expect(result.user.updatedAt).toEqual(expectedPost.updatedAt);
+      expect(result.user.createdAt).toEqual(expectedPost.user.createdAt);
+      expect(result.user.updatedAt).toEqual(expectedPost.user.updatedAt);
       expect(result.categoryId).toBe(expectedPost.category.categoryId);
       expect(result.category.categoryId).toBe(expectedPost.category.categoryId);
       expect(result.category.title).toBe(expectedPost.category.title);

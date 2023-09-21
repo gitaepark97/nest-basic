@@ -63,8 +63,8 @@ describe('AuthService', () => {
       email: createRandomEmail(),
       nickname: createRandomString(15),
       password: createRandomString(10),
-      createdAt: new Date('2023-10-10'),
-      updatedAt: new Date('2023-10-10'),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const salt = await generateSalt();
