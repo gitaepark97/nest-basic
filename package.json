@@ -17,7 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles",
     "create:db": "docker run --name mariadb -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root_password -e MYSQL_DATABASE=basic -d mariadb:11 && docker system prune -f -a",
     "remove:db": "docker container stop mariadb && docker container remove mariadb",
     "typeorm": "npm run build && npx typeorm -d dist/db/data-source.js",
