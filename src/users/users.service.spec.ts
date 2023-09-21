@@ -60,7 +60,7 @@ describe('UsersService', () => {
         .spyOn(mockUsersRepository, 'findOne')
         .mockResolvedValue(expectedUser);
 
-      const result = await service.updateUser(user.userId, req.nickname);
+      const result = await service.updateUser(user.userId, req);
 
       expect(result.email).toEqual(expectedUser.email);
       expect(result.nickname).toEqual(expectedUser.nickname);
@@ -84,7 +84,7 @@ describe('UsersService', () => {
       .mockRejectedValue(expectedError);
 
     await expect(async () => {
-      await service.updateUser(user.userId, req.nickname);
+      await service.updateUser(user.userId, req);
     }).rejects.toThrowError(new InternalServerErrorException());
 
     findOneUsersSpy.mockRestore();
@@ -100,7 +100,7 @@ describe('UsersService', () => {
       .mockResolvedValue(null);
 
     await expect(async () => {
-      await service.updateUser(0, req.nickname);
+      await service.updateUser(0, req);
     }).rejects.toThrowError(new NotFoundException('not found user'));
 
     findOneUsersSpy.mockRestore();
@@ -121,7 +121,7 @@ describe('UsersService', () => {
       .mockRejectedValue(expectedError);
 
     await expect(async () => {
-      await service.updateUser(user.userId, req.nickname);
+      await service.updateUser(user.userId, req);
     }).rejects.toThrowError(new BadRequestException(expectedError.sqlMessage));
 
     updateUsersSpy.mockRestore();
