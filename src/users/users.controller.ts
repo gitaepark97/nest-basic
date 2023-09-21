@@ -14,7 +14,34 @@ import {
 } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user.dto';
 
+@ApiUnauthorizedResponse({
+  content: {
+    'application/json': {
+      examples: {
+        unauthorized: {
+          value: {
+            message: 'Unauthorized',
+          },
+        },
+      },
+    },
+  },
+})
+@ApiInternalServerErrorResponse({
+  content: {
+    'application/json': {
+      examples: {
+        internalServerError: {
+          value: {
+            message: 'Internal Server Error',
+          },
+        },
+      },
+    },
+  },
+})
 @ApiTags('USERS')
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -45,19 +72,6 @@ export class UsersController {
       },
     },
   })
-  @ApiUnauthorizedResponse({
-    content: {
-      'application/json': {
-        examples: {
-          unauthorized: {
-            value: {
-              message: 'Unauthorized',
-            },
-          },
-        },
-      },
-    },
-  })
   @ApiNotFoundResponse({
     content: {
       'application/json': {
@@ -71,22 +85,8 @@ export class UsersController {
       },
     },
   })
-  @ApiInternalServerErrorResponse({
-    content: {
-      'application/json': {
-        examples: {
-          internalServerError: {
-            value: {
-              message: 'Internal Server Error',
-            },
-          },
-        },
-      },
-    },
-  })
-  @UseGuards(AuthGuard)
   @Patch('')
   updateUser(@User() user, @Body() body: UpdateUserRequestDto) {
-    return this.usersService.updateUser(user.userId, body.nickname);
+    return this.usersService.updateUser(user.userId, body);
   }
 }

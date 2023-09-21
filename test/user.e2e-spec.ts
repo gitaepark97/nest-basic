@@ -108,8 +108,10 @@ describe('UsersController (e2e)', () => {
       expect(body.message).toBe('Unauthorized');
     });
 
-    it('required nickname', async () => {
-      const req = {};
+    it('nickname is not empty', async () => {
+      const req = {
+        nickname: '',
+      };
 
       const { statusCode, body } = await request(app.getHttpServer())
         .patch('/api/users')
@@ -117,11 +119,7 @@ describe('UsersController (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`);
 
       expect(statusCode).toBe(400);
-      expect(body.message).toEqual([
-        'nickname must be shorter than or equal to 50 characters',
-        'nickname should not be empty',
-        'nickname must be a string',
-      ]);
+      expect(body.message).toEqual(['nickname should not be empty']);
     });
 
     it('invalid nickname type', async () => {

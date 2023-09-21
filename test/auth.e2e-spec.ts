@@ -76,6 +76,23 @@ describe('AuthController (e2e)', () => {
       ]);
     });
 
+    it('email is not empty', async () => {
+      const req = {
+        password: createRandomString(10),
+        nickname: createRandomString(15),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'email should not be empty',
+        'email must be an email',
+      ]);
+    });
+
     it('invalid email type', async () => {
       const req = {
         email: createRandomString(5),
@@ -108,6 +125,23 @@ describe('AuthController (e2e)', () => {
       ]);
     });
 
+    it('password is not empty', async () => {
+      const req = {
+        email: createRandomEmail(),
+        nickname: createRandomString(15),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'password should not be empty',
+        'password must be a string',
+      ]);
+    });
+
     it('invalid password type', async () => {
       const req = {
         email: createRandomEmail(),
@@ -124,6 +158,24 @@ describe('AuthController (e2e)', () => {
     });
 
     it('required nickname', async () => {
+      const req = {
+        email: createRandomEmail(),
+        password: createRandomString(10),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'nickname must be shorter than or equal to 50 characters',
+        'nickname should not be empty',
+        'nickname must be a string',
+      ]);
+    });
+
+    it('nickname is not empty', async () => {
       const req = {
         email: createRandomEmail(),
         password: createRandomString(10),
@@ -263,6 +315,24 @@ describe('AuthController (e2e)', () => {
       ]);
     });
 
+    it('email is not empty', async () => {
+      const req = {
+        password,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'email should not be empty',
+        'email must be an email',
+      ]);
+    });
+
     it('invalid email type', async () => {
       const req = {
         email: createRandomString(5),
@@ -280,6 +350,24 @@ describe('AuthController (e2e)', () => {
     });
 
     it('required password', async () => {
+      const req = {
+        email,
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(req)
+        .set('User-Agent', userAgent)
+        .set('X-Forwarded-For', clientIp);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'password should not be empty',
+        'password must be a string',
+      ]);
+    });
+
+    it('password is not empty', async () => {
       const req = {
         email,
       };
@@ -385,6 +473,33 @@ describe('AuthController (e2e)', () => {
       expect(typeof body.accessToken).toBe('string');
     });
 
+    it('required refresh token', async () => {
+      const req = {};
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'refreshToken should not be empty',
+        'refreshToken must be a string',
+      ]);
+    });
+
+    it('refresh token is not empty', async () => {
+      const req = {};
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/auth/renew-access-token')
+        .send(req);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'refreshToken should not be empty',
+        'refreshToken must be a string',
+      ]);
+    });
     it('required refresh token', async () => {
       const req = {};
 

@@ -168,6 +168,26 @@ describe('PostsController (e2e)', () => {
       ]);
     });
 
+    it('title is not empty', async () => {
+      const req = {
+        categoryId: createRandomInt(1, 6),
+        thumbnailImageUrl: createRandomString(50),
+        description: createRandomString(100),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/posts')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual([
+        'title must be shorter than or equal to 255 characters',
+        'title should not be empty',
+        'title must be a string',
+      ]);
+    });
+
     it('invalid title type', async () => {
       const req = {
         categoryId: createRandomInt(1, 6),
@@ -227,6 +247,23 @@ describe('PostsController (e2e)', () => {
       ]);
     });
 
+    it('thumnail image url is not empty', async () => {
+      const req = {
+        categoryId: createRandomInt(1, 6),
+        title: createRandomString(10),
+        thumbnailImageUrl: '',
+        description: createRandomString(100),
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/posts')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual(['thumbnailImageUrl should not be empty']);
+    });
+
     it('invalid title type', async () => {
       const req = {
         categoryId: createRandomInt(1, 6),
@@ -283,6 +320,23 @@ describe('PostsController (e2e)', () => {
         'description should not be empty',
         'description must be a string',
       ]);
+    });
+
+    it('description is not empty', async () => {
+      const req = {
+        categoryId: createRandomInt(1, 6),
+        title: createRandomString(10),
+        thumbnailImageUrl: createRandomString(50),
+        description: '',
+      };
+
+      const { statusCode, body } = await request(app.getHttpServer())
+        .post('/api/posts')
+        .send(req)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(statusCode).toBe(400);
+      expect(body.message).toEqual(['description should not be empty']);
     });
 
     it('invalid description type', async () => {

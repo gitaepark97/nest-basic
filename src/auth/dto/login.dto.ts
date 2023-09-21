@@ -50,10 +50,10 @@ export class LoginResponseDto {
   @ApiProperty({
     example: {
       userId: 1,
-      email: 'test@email.com',
-      nickname: 'test',
-      createdAt: '0000-00-00T00:00:00.000Z',
-      updatedAt: '0000-00-00T00:00:00.000Z',
+      email: 'test1@email.com',
+      nickname: 'test1',
+      createdAt: '2023-09-20T16:10:02.000Z',
+      updatedAt: '2023-09-20T16:10:02.000Z',
     },
     description: '회원 정보',
   })

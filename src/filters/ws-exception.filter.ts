@@ -7,6 +7,14 @@ export class WsAndHttpExceptionsFilter extends BaseWsExceptionFilter {
     const ctx = host.switchToWs();
     const client = ctx.getClient();
 
-    client.emit('Error', { message: exception.message });
+    if (exception instanceof HttpException) {
+      const err = exception.getResponse() as
+        | { message: any; statusCode: number }
+        | { error: string; statusCode: 400; message: string[] };
+
+      client.emit('Error', { message: err.message });
+    } else if (exception instanceof WsException) {
+      client.emit('Error', { message: exception.message });
+    }
   }
 }

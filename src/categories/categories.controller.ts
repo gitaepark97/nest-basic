@@ -10,7 +10,34 @@ import {
 } from '@nestjs/swagger';
 import { GetCategoriesResponseDto as GetCategoryListResponseDto } from './dto/getCategoryList.dto';
 
+@ApiUnauthorizedResponse({
+  content: {
+    'application/json': {
+      examples: {
+        unauthorized: {
+          value: {
+            message: 'Unauthorized',
+          },
+        },
+      },
+    },
+  },
+})
+@ApiInternalServerErrorResponse({
+  content: {
+    'application/json': {
+      examples: {
+        internalServerError: {
+          value: {
+            message: 'Internal Server Error',
+          },
+        },
+      },
+    },
+  },
+})
 @ApiTags('CATEGORIES')
+@UseGuards(AuthGuard)
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -19,33 +46,6 @@ export class CategoriesController {
   @ApiOkResponse({
     type: GetCategoryListResponseDto,
   })
-  @ApiUnauthorizedResponse({
-    content: {
-      'application/json': {
-        examples: {
-          unauthorized: {
-            value: {
-              message: 'Unauthorized',
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiInternalServerErrorResponse({
-    content: {
-      'application/json': {
-        examples: {
-          internalServerError: {
-            value: {
-              message: 'Internal Server Error',
-            },
-          },
-        },
-      },
-    },
-  })
-  @UseGuards(AuthGuard)
   @Get('')
   getCategoryList() {
     return this.categoriesService.getCategoryList();

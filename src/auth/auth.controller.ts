@@ -17,6 +17,19 @@ import {
 } from './dto/renewAccessToken.dto';
 import { UserResponseDto } from '../users/dto/user.dto';
 
+@ApiInternalServerErrorResponse({
+  content: {
+    'application/json': {
+      examples: {
+        internalServerError: {
+          value: {
+            message: 'Internal Server Error',
+          },
+        },
+      },
+    },
+  },
+})
 @ApiTags('AUTH')
 @Controller('auth')
 export class AuthController {
@@ -60,19 +73,6 @@ export class AuthController {
                 'nickname should not be empty',
                 'nickname must be a string',
               ],
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiInternalServerErrorResponse({
-    content: {
-      'application/json': {
-        examples: {
-          internalServerError: {
-            value: {
-              message: 'Internal Server Error',
             },
           },
         },
@@ -126,19 +126,6 @@ export class AuthController {
           notFoundUser: {
             value: {
               message: 'not found user',
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiInternalServerErrorResponse({
-    content: {
-      'application/json': {
-        examples: {
-          internalServerError: {
-            value: {
-              message: 'Internal Server Error',
             },
           },
         },
@@ -213,19 +200,6 @@ export class AuthController {
           notFoundSession: {
             value: {
               message: 'not found session',
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiInternalServerErrorResponse({
-    content: {
-      'application/json': {
-        examples: {
-          internalServerError: {
-            value: {
-              message: 'Internal Server Error',
             },
           },
         },

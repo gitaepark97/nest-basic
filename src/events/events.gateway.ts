@@ -12,11 +12,13 @@ import { WsAndHttpExceptionsFilter } from '../filters/ws-exception.filter';
 import { ChatRoomsService } from '../chat-rooms/chat-rooms.service';
 import { CreateChatRoomRequestDto } from './dto/createChatRoom.dto';
 
-@WebSocketGateway(8000, {
+@WebSocketGateway({
   namespace: 'websocket',
   cors: '*',
   transport: ['websocket'],
 })
+@UseFilters(WsAndHttpExceptionsFilter)
+@UsePipes(new ValidationPipe({ transform: true }))
 export class EventsGateway implements OnGatewayConnection {
   constructor(private readonly chatRoomsService: ChatRoomsService) {}
 
@@ -32,8 +34,6 @@ export class EventsGateway implements OnGatewayConnection {
     client.data.userId = userId;
   }
 
-  @UseFilters(WsAndHttpExceptionsFilter)
-  @UsePipes(new ValidationPipe({ transform: true }))
   @SubscribeMessage('CreateChatRoom')
   async handleCreateChatRoom(
     @ConnectedSocket() client,
