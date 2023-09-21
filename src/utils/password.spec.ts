@@ -15,7 +15,7 @@ describe('password', () => {
 
     expect(typeof salt1).toBe('string');
     expect(typeof salt2).toBe('string');
-    expect(salt1).not.toEqual(salt2);
+    expect(salt1).not.toBe(salt2);
   });
 
   it('generate password', async () => {

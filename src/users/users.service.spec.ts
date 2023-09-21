@@ -36,8 +36,8 @@ describe('UsersService', () => {
       userId: createRandomInt(1, 10),
       email: createRandomEmail(),
       nickname: createRandomString(15),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date('2023-10-10'),
+      updatedAt: new Date('2023-10-10'),
     };
   });
 
@@ -54,6 +54,7 @@ describe('UsersService', () => {
       const expectedUser = {
         ...user,
         nickname: req.nickname,
+        updatedAt: new Date('2023-10-11'),
       };
 
       const findOneUsersSpy = jest
@@ -62,9 +63,9 @@ describe('UsersService', () => {
 
       const result = await service.updateUser(user.userId, req);
 
-      expect(result.email).toEqual(expectedUser.email);
-      expect(result.nickname).toEqual(expectedUser.nickname);
-      expect(result.userId).toEqual(expectedUser.userId);
+      expect(result.email).toBe(expectedUser.email);
+      expect(result.nickname).toBe(expectedUser.nickname);
+      expect(result.userId).toBe(expectedUser.userId);
       expect(result.createdAt).toEqual(expectedUser.createdAt);
       expect(result.updatedAt).toEqual(expectedUser.updatedAt);
 

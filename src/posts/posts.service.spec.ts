@@ -37,8 +37,8 @@ describe('PostsService', () => {
       userId: createRandomInt(1, 10),
       email: createRandomEmail(),
       nickname: createRandomString(15),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date('2023-10-10'),
+      updatedAt: new Date('2023-10-10'),
     };
 
     category = {
@@ -53,8 +53,8 @@ describe('PostsService', () => {
       title: createRandomString(10),
       thumbnailImageUrl: createRandomString(50),
       description: createRandomString(100),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date('2023-10-10'),
+      updatedAt: new Date('2023-10-10'),
       user,
       category,
     };

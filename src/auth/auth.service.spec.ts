@@ -63,8 +63,8 @@ describe('AuthService', () => {
       email: createRandomEmail(),
       nickname: createRandomString(15),
       password: createRandomString(10),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date('2023-10-10'),
+      updatedAt: new Date('2023-10-10'),
     };
 
     const salt = await generateSalt();
@@ -98,9 +98,9 @@ describe('AuthService', () => {
         req.nickname,
       );
 
-      expect(result.email).toEqual(expectedUser.email);
-      expect(result.nickname).toEqual(expectedUser.nickname);
-      expect(result.userId).toEqual(expectedUser.userId);
+      expect(result.email).toBe(expectedUser.email);
+      expect(result.nickname).toBe(expectedUser.nickname);
+      expect(result.userId).toBe(expectedUser.userId);
       expect(result.createdAt).toEqual(expectedUser.createdAt);
       expect(result.updatedAt).toEqual(expectedUser.updatedAt);
 
@@ -217,9 +217,9 @@ describe('AuthService', () => {
       expect(result.sessionId).toBe(expectedSession.sessionId);
       expect(result.accessToken).toBe(token);
       expect(result.refreshToken).toBe(token);
-      expect(result.user.email).toEqual(expectedUser.email);
-      expect(result.user.nickname).toEqual(expectedUser.nickname);
-      expect(result.user.userId).toEqual(expectedUser.userId);
+      expect(result.user.email).toBe(expectedUser.email);
+      expect(result.user.nickname).toBe(expectedUser.nickname);
+      expect(result.user.userId).toBe(expectedUser.userId);
       expect(result.user.createdAt).toEqual(expectedUser.createdAt);
       expect(result.user.updatedAt).toEqual(expectedUser.updatedAt);
 
