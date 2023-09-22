@@ -6,6 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -23,6 +24,7 @@ async function bootstrap() {
     origin: true,
     credentials: true,
   });
+  app.use(helmet());
   app.useGlobalFilters(new HttpExceptionFilter());
 
   setupApiDocument(app);

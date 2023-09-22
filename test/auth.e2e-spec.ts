@@ -27,10 +27,6 @@ describe('AuthController (e2e)', () => {
         transform: true,
       }),
     );
-    app.enableCors({
-      origin: true,
-      credentials: true,
-    });
     app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.init();

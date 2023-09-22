@@ -8,7 +8,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { generateHashPassword, generateSalt } from '../utils/password';
 import { Sessions } from '../entities/Sessions';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
@@ -18,6 +17,7 @@ import {
   createRandomInt,
   createRandomString,
 } from '../../test/utils/random';
+import * as bcrypt from 'bcryptjs';
 
 const mockUsersRepository = {
   save: jest.fn(),
@@ -67,8 +67,8 @@ describe('AuthService', () => {
       updatedAt: new Date(),
     };
 
-    const salt = await generateSalt();
-    const hashedPassword = await generateHashPassword(user.password, salt);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(user.password, salt);
 
     user.salt = salt;
     user.hashedPassword = hashedPassword;

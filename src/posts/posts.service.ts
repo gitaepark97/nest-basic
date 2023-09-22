@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -87,7 +88,7 @@ export class PostsService {
 
       return post;
     } catch (err) {
-      if (err instanceof NotFoundException) {
+      if (err instanceof HttpException) {
         throw err;
       }
 
@@ -112,10 +113,7 @@ export class PostsService {
 
       return updatedPost;
     } catch (err) {
-      if (
-        err instanceof NotFoundException ||
-        err instanceof ForbiddenException
-      ) {
+      if (err instanceof HttpException) {
         throw err;
       }
 
@@ -129,10 +127,7 @@ export class PostsService {
 
       await this.postsRepository.softDelete(postId);
     } catch (err) {
-      if (
-        err instanceof NotFoundException ||
-        err instanceof ForbiddenException
-      ) {
+      if (err instanceof HttpException) {
         throw err;
       }
 

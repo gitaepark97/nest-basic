@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -8,15 +9,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entities/Users';
 import { Repository } from 'typeorm';
-import {
-  generateHashPassword,
-  generateSalt,
-  validatePassword,
-} from '../utils/password';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Sessions } from '../entities/Sessions';
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -35,8 +32,8 @@ export class AuthService {
     nickname: string,
   ): Promise<Users> {
     try {
-      const salt = await generateSalt();
-      const hashedPassword = await generateHashPassword(password, salt);
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = await this.usersRepository.save({
         email,
@@ -71,7 +68,6 @@ export class AuthService {
           'userId',
           'email',
           'hashedPassword',
-          'salt',
           'nickname',
           'createdAt',
           'updatedAt',
@@ -81,7 +77,7 @@ export class AuthService {
         throw new NotFoundException('not found user');
       }
 
-      if (!(await validatePassword(password, user.hashedPassword, user.salt))) {
+      if (!(await bcrypt.compare(password, user.hashedPassword))) {
         throw new BadRequestException('wrong password');
       }
 
@@ -104,7 +100,6 @@ export class AuthService {
       });
 
       delete user.hashedPassword;
-      delete user.salt;
 
       return {
         sessionId: session.sessionId,
@@ -113,10 +108,7 @@ export class AuthService {
         user,
       };
     } catch (err) {
-      if (
-        err instanceof NotFoundException ||
-        err instanceof BadRequestException
-      ) {
+      if (err instanceof HttpException) {
         throw err;
       }
 
@@ -157,11 +149,7 @@ export class AuthService {
 
       return { accessToken };
     } catch (err) {
-      if (
-        err instanceof NotFoundException ||
-        err instanceof BadRequestException ||
-        err instanceof UnauthorizedException
-      ) {
+      if (err instanceof HttpException) {
         throw err;
       }
 

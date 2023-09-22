@@ -13,8 +13,6 @@ export class ChatRoomsService {
   constructor(
     @InjectRepository(ChatRooms)
     private readonly chatRoomsRepository: Repository<ChatRooms>,
-    @InjectRepository(ChatRoomUsers)
-    private readonly chatRoomUserRepository: Repository<ChatRoomUsers>,
     private dataSource: DataSource,
   ) {}
 
