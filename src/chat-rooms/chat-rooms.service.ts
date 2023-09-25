@@ -56,10 +56,11 @@ export class ChatRoomsService {
 
   async getChatRoomList() {
     try {
-      const chatRoomList = await this.chatRoomsRepository.find({
-        relations: ['chatRoomUsers'],
-        order: { createdAt: 'DESC' },
-      });
+      const chatRoomList = await this.chatRoomsRepository
+        .createQueryBuilder('chatRooms')
+        .innerJoinAndSelect('chatRooms.chatRoomUsers', 'chatRoomUsers')
+        .orderBy('chatRooms.createdAt', 'DESC')
+        .getMany();
 
       return { list: chatRoomList };
     } catch (err) {

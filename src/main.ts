@@ -7,7 +7,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import helmet from 'helmet';
-import * as csurf from 'csurf';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -27,7 +26,6 @@ async function bootstrap() {
     credentials: true,
   });
   app.use(helmet());
-  app.use(csurf());
 
   setupApiDocument(app);
 

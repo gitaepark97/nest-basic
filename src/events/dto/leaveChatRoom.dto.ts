@@ -1,3 +1,3 @@
-import { JoinChatRoomDto } from './joinChatRoom.dto';
+import { JoinChatRoomRequestDto } from './joinChatRoom.dto';
 
-export class LeaveChatRoomDto extends JoinChatRoomDto {}
+export class LeaveChatRoomDto extends JoinChatRoomRequestDto {}

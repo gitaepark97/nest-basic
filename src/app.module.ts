@@ -18,6 +18,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { CategoriesModule } from './categories/categories.module';
 import { EventsModule } from './events/events.module';
 import { ChatRoomUsersModule } from './chat-room-users/chat-room-users.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ChatRoomUsersModule } from './chat-room-users/chat-room-users.module';
     CategoriesModule,
     EventsModule,
     ChatRoomUsersModule,
+    ChatsModule,
   ],
   controllers: [AppController],
 })
