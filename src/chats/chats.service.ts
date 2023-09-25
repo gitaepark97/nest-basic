@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoomUsersService } from '../chat-room-users/chat-room-users.service';
 import { Chats } from '../entities/Chats';
@@ -12,12 +12,28 @@ export class ChatsService {
     private readonly chatRoomUsersService: ChatRoomUsersService,
   ) {}
 
-  createChat(chatRoomId: number, userId: number, content: string) {
+  async createChat(chatRoomId: number, userId: number, content: string) {
+    if (
+      !(await this.chatRoomUsersService.validateChatRoomUser(
+        chatRoomId,
+        userId,
+      ))
+    ) {
+      throw new BadRequestException('join chat room first');
+    }
+
     return this.chatsRepository.save({ chatRoomId, userId, content });
   }
 
   async getChatList(chatRoomId: number, userId: number) {
-    await this.chatRoomUsersService.validateChatRoomUser(chatRoomId, userId);
+    if (
+      !(await this.chatRoomUsersService.validateChatRoomUser(
+        chatRoomId,
+        userId,
+      ))
+    ) {
+      throw new BadRequestException('join chat room first');
+    }
 
     const chatList = await this.chatsRepository
       .createQueryBuilder('chats')

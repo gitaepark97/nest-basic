@@ -187,11 +187,6 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const userId = client.data.userId;
 
-      await this.chatRoomUsersService.validateChatRoomUser(
-        body.chatRoomId,
-        userId,
-      );
-
       const chat = await this.chatsService.createChat(
         body.chatRoomId,
         userId,

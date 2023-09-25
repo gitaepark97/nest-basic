@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -14,8 +15,24 @@ export class ChatRoomUsersService {
     private readonly chatRoomUsersRepository: Repository<ChatRoomUsers>,
   ) {}
 
+  async validateChatRoomUser(chatRoomId: number, userId: number) {
+    try {
+      const chatRoomUser = await this.chatRoomUsersRepository.findOne({
+        where: { chatRoomId, userId },
+      });
+
+      return chatRoomUser ? true : false;
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async createChatRoomUser(chatRoomId: number, userId: number) {
     try {
+      if (await this.validateChatRoomUser(chatRoomId, userId)) {
+        throw new BadRequestException('already in chat room');
+      }
+
       const chatRoomUser = await this.chatRoomUsersRepository.save({
         chatRoomId,
         userId,
@@ -34,19 +51,12 @@ export class ChatRoomUsersService {
 
   async deleteChatRoomUser(chatRoomId: number, userId: number) {
     try {
+      if (!(await this.validateChatRoomUser(chatRoomId, userId))) {
+        throw new BadRequestException('join chat room first');
+      }
+
       await this.chatRoomUsersRepository.delete({ chatRoomId, userId });
     } catch (err) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async validateChatRoomUser(chatRoomId: number, userId: number) {
-    try {
-      await this.chatRoomUsersRepository.findOneOrFail({
-        where: { chatRoomId, userId },
-      });
-    } catch (err) {
-      console.log(err);
       throw new InternalServerErrorException();
     }
   }
