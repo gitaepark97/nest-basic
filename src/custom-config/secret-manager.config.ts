@@ -32,8 +32,6 @@ const fetchSecrets = async () => {
 export default async () => {
   const secrets = await fetchSecrets();
 
-  console.log(secrets);
-
   return {
     port: Number(secrets.PORT),
     database: {

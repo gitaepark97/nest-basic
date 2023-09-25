@@ -20,7 +20,7 @@ import { ChatRoomsService } from '../chat-rooms/chat-rooms.service';
 import { CreateChatRoomRequestDto } from './dto/createChatRoom.dto';
 import { JoinChatRoomDto } from './dto/joinChatRoom.dto';
 import { ChatRoomUsersService } from '../chat-room-users/chat-room-users.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { LeaveChatRoomDto } from './dto/leaveChatRoom.dto';
 
 @WebSocketGateway({
