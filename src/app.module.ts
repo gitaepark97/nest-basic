@@ -17,6 +17,7 @@ import { Chats } from './entities/Chats';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { CategoriesModule } from './categories/categories.module';
 import { EventsModule } from './events/events.module';
+import { ChatRoomUsersModule } from './chat-room-users/chat-room-users.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { EventsModule } from './events/events.module';
         const secrets = configService.get('database');
         return {
           type: secrets.type,
+          port: secrets.port,
           host: secrets.host,
           username: secrets.username,
           password: secrets.password,
@@ -49,6 +51,7 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     CategoriesModule,
     EventsModule,
+    ChatRoomUsersModule,
   ],
   controllers: [AppController],
 })

@@ -6,6 +6,7 @@ const buildDataSource = async () => {
 
   return new DataSource({
     type: secrets.database.type,
+    port: secrets.database.port,
     host: secrets.database.host,
     username: secrets.database.username,
     password: secrets.database.password,

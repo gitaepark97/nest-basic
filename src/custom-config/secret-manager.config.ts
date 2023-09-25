@@ -32,10 +32,13 @@ const fetchSecrets = async () => {
 export default async () => {
   const secrets = await fetchSecrets();
 
+  console.log(secrets);
+
   return {
     port: Number(secrets.PORT),
     database: {
       type: secrets.DB_TYPE,
+      port: secrets.DB_PORT,
       host: secrets.DB_HOST,
       username: secrets.DB_USERNAME,
       password: secrets.DB_PASSWORD,

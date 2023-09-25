@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -15,6 +16,26 @@ export class UsersService {
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
   ) {}
+
+  async getUser(userId: number) {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { userId },
+        relations: ['chatRoomUsers'],
+      });
+      if (!user) {
+        throw new NotFoundException('not found user');
+      }
+
+      return user;
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+
+      throw new InternalServerErrorException();
+    }
+  }
 
   async updateUser(userId: number, updateUserReq: UpdateUserRequestDto) {
     try {

@@ -13,7 +13,7 @@ export class ChatRoomsService {
   constructor(
     @InjectRepository(ChatRooms)
     private readonly chatRoomsRepository: Repository<ChatRooms>,
-    private dataSource: DataSource,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createChatRoom(userId: number, title: string) {
